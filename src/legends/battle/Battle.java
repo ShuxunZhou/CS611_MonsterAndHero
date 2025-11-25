@@ -1,3 +1,10 @@
+/**
+ * Battle.java
+ *
+ * Manages turn-based combat between heroes and monsters.
+ * Handles battle flow, spell casting, target selection, and rewards.
+ *
+ */
 package legends.battle;
 
 import legends.character.*;
@@ -8,17 +15,27 @@ public class Battle {
     private List<Hero> heroes;
     private List<Monster> monsters;
 
+    /**
+     * Constructor for Battle
+     * @param h List of heroes participating in battle
+     * @param m List of monsters participating in battle
+     */
     public Battle(List<Hero> h, List<Monster> m) {
         heroes = h;
         monsters = m;
     }
 
+    /**
+     * Start the battle and manage turn-based combat
+     * @param in Scanner for user input
+     * @return true if heroes win, false if monsters win
+     */
     public boolean start(Scanner in) {
         System.out.println("⚔️ Battle begins! ⚔️");
         showBattleStatus();
 
         while (alive(heroes) && alive(monsters)) {
-            // 英雄回合
+            // Hero Turn
             for (Hero hero : heroes) {
                 if (!hero.isAlive()) continue;
 
@@ -38,7 +55,7 @@ public class Battle {
                         break;
                     case "I":
                         showBattleInfo();
-                        continue; // 不结束回合
+                        continue; // Don't end turn
                     default:
                         System.out.println(hero.getName() + " passes this turn.");
                         break;
@@ -49,23 +66,22 @@ public class Battle {
 
             if (!alive(monsters)) break;
 
-            // 怪物回合
+            // Monster Turn
             System.out.println("\n--- Monster Turn ---");
             for (Monster monster : monsters) {
                 if (!monster.isAlive()) continue;
-
                 Hero target = selectRandomAliveHero();
                 if (target != null) {
                     monster.attack(target);
                 }
             }
 
-            // 回合结束恢复
+            // End of round recovery
             endOfRoundRecovery();
             showBattleStatus();
         }
 
-        // 战斗结束
+        // Battle ended
         if (alive(heroes)) {
             System.out.println("\n🎉 Victory! The heroes win! 🎉");
             distributeRewards();
@@ -76,12 +92,21 @@ public class Battle {
         }
     }
 
+    /**
+     * Display action menu for hero's turn
+     */
     private void showActionMenu() {
         System.out.println("Choose action:");
         System.out.println("(A)ttack | (S)pell | (I)nfo | (P)ass");
         System.out.print("Your choice: ");
     }
 
+    /**
+     * Handle spell casting by a hero
+     * @param hero The hero casting the spell
+     * @param target The target monster
+     * @param in Scanner for user input
+     */
     private void castSpell(Hero hero, Monster target, Scanner in) {
         List<Spell> availableSpells = hero.getAvailableSpells();
 
@@ -115,6 +140,11 @@ public class Battle {
         }
     }
 
+    /**
+     * Let player select a target monster
+     * @param in Scanner for user input
+     * @return Selected monster or null if none available
+     */
     private Monster selectTarget(Scanner in) {
         List<Monster> aliveMonsters = new ArrayList<>();
         for (Monster m : monsters) {
@@ -142,9 +172,13 @@ public class Battle {
             // Fall through to return first monster
         }
 
-        return aliveMonsters.get(0); // 默认选择第一个
+        return aliveMonsters.get(0); // Default to first monster
     }
 
+    /**
+     * Randomly select a living hero for monster to attack
+     * @return Random alive hero or null if none available
+     */
     private Hero selectRandomAliveHero() {
         List<Hero> aliveHeroes = new ArrayList<>();
         for (Hero h : heroes) {
@@ -156,10 +190,13 @@ public class Battle {
         return aliveHeroes.get(new Random().nextInt(aliveHeroes.size()));
     }
 
+    /**
+     * Restore HP and MP for all living heroes at end of round
+     */
     private void endOfRoundRecovery() {
         for (Hero hero : heroes) {
             if (hero.isAlive()) {
-                // 每回合恢复 10% HP 和 MP
+                // Restore 10% HP and MP per round
                 int hpRecover = (int)(hero.getMaxHp() * 0.1);
                 int mpRecover = (int)(hero.getMaxMp() * 0.1);
                 hero.heal(hpRecover);
@@ -168,6 +205,9 @@ public class Battle {
         }
     }
 
+    /**
+     * Display current battle status for all participants
+     */
     private void showBattleStatus() {
         System.out.println("\n=== Battle Status ===");
         System.out.println("Heroes:");
@@ -186,6 +226,9 @@ public class Battle {
         System.out.println("===================");
     }
 
+    /**
+     * Display detailed information about all battle participants
+     */
     private void showBattleInfo() {
         System.out.println("\n=== Detailed Battle Info ===");
         System.out.println("Your Heroes:");
@@ -204,6 +247,9 @@ public class Battle {
         }
     }
 
+    /**
+     * Distribute XP and gold rewards to surviving heroes
+     */
     private void distributeRewards() {
         int baseXp = 100;
         int baseGold = 200;
@@ -217,6 +263,11 @@ public class Battle {
         }
     }
 
+    /**
+     * Check if any entity in the list is still alive
+     * @param entities List of entities to check
+     * @return true if at least one entity is alive, false otherwise
+     */
     private boolean alive(List<? extends LivingEntity> entities) {
         for (LivingEntity e : entities) {
             if (e.isAlive()) return true;
