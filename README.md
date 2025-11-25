@@ -1,5 +1,9 @@
 # CS611_MonsterAndHero
 
+## Author Infomation
+- Name: Shuxun Zhou
+- BU email: shuxun@bu.edu
+
 ## Project Overview
 
 **Legends: Monsters and Heroes** is a Java-based text-based adventure RPG. Players can create a team of heroes, explore a magical world, battle various monsters, collect equipment, level up, and become legendary heroes!
