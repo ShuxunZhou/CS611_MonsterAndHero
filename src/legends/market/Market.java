@@ -18,27 +18,37 @@ public class Market {
     public void run(Hero h, Scanner in) {
         while (true) {
             System.out.println("\n=== Market ===");
+            System.out.println("Gold: " + h.getGold());
             for (int i = 0; i < stock.size(); i++)
                 System.out.println("[" + i + "] " + stock.get(i));
 
             System.out.println("(B)uy, (S)ell, (Q)uit");
-            String cmd = in.nextLine().toUpperCase();
+            System.out.print("Command: ");
+            String cmd = in.nextLine().toUpperCase().trim();
 
             if (cmd.equals("Q")) break;
 
             if (cmd.equals("B")) {
                 System.out.print("Which item? ");
-                int idx = Integer.parseInt(in.nextLine());
-                if (idx < 0 || idx >= stock.size()) continue;
-                Item it = stock.get(idx);
+                try {
+                    int idx = Integer.parseInt(in.nextLine());
+                    if (idx < 0 || idx >= stock.size()) {
+                        System.out.println("Invalid selection.");
+                        continue;
+                    }
+                    Item it = stock.get(idx);
 
-                if (h.getGold() < it.getPrice()) {
-                    System.out.println("Not enough gold.");
-                    continue;
+                    if (h.getGold() < it.getPrice()) {
+                        System.out.println("Not enough gold.");
+                        continue;
+                    }
+                    h.getInventory().addItem(it);
+                    h.spendGold(it.getPrice());
+                    stock.remove(it);
+                    System.out.println("Bought " + it.getName() + " for " + it.getPrice() + " gold!");
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid number.");
                 }
-                h.getInventory().addItem(it);
-                stock.remove(it);
-                System.out.println("Bought " + it.getName());
             }
 
             if (cmd.equals("S")) {
@@ -52,12 +62,20 @@ public class Market {
                     System.out.println("[" + i + "] " + inv.get(i));
 
                 System.out.print("Sell which? ");
-                int idx = Integer.parseInt(in.nextLine());
-                if (idx < 0 || idx >= inv.size()) continue;
-                Item it = inv.get(idx);
-                stock.add(it);
-                h.getInventory().removeItem(it);
-                System.out.println("Sold " + it.getName());
+                try {
+                    int idx = Integer.parseInt(in.nextLine());
+                    if (idx < 0 || idx >= inv.size()) {
+                        System.out.println("Invalid selection.");
+                        continue;
+                    }
+                    Item it = inv.get(idx);
+                    stock.add(it);
+                    h.getInventory().removeItem(it);
+                    h.gainGold(it.getPrice());
+                    System.out.println("Sold " + it.getName() + " for " + it.getPrice() + " gold!");
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid number.");
+                }
             }
         }
     }

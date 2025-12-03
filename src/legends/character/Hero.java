@@ -117,6 +117,14 @@ public abstract class Hero extends LivingEntity {
         System.out.println(name + " attacks " + m.getName() + " for " + finalDamage + " damage!");
         m.takeDamage(finalDamage);
     }
+    /**
+     * Spend gold
+     * @param amount The amount of gold to spend
+     */
+    public void spendGold(int amount) {
+        gold -= amount;
+    }
+
 
     /**
      * Cast a spell on a target monster
